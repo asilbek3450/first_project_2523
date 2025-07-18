@@ -4,40 +4,35 @@ from rest_framework import status
 from .models import Author, Genre, Book
 from .serializers import AuthorSerializer, GenreSerializer, BookSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework import generics
 
 # AUTHOR CRUD - Create, Read, Update, Delete operations for Author model
-class AuthorListCreateAPIView(APIView):
-    def get(self, request):
-        authors = Author.objects.all()  # ORM query, bazadan hamma Authorlarni oblelish uchun
-        serializer = AuthorSerializer(authors, many=True)
-        return Response(serializer.data)
+class AuthorAPIView(generics.ListCreateAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
 
-    def post(self, request):
-        serializer = AuthorSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class AuthorDetailAPIView(APIView):
+#     def get(self, request, pk):
+#         author = get_object_or_404(Author, pk=pk)
+#         serializer = AuthorSerializer(author)
+#         return Response(serializer.data)
 
+#     def put(self, request, pk):
+#         author = get_object_or_404(Author, pk=pk)
+#         serializer = AuthorSerializer(author, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AuthorDetailAPIView(APIView):
-    def get(self, request, pk):
-        author = get_object_or_404(Author, pk=pk)
-        serializer = AuthorSerializer(author)
-        return Response(serializer.data)
+#     def delete(self, request, pk):
+#         author = get_object_or_404(Author, pk=pk)
+#         author.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+class AuthorDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
 
-    def put(self, request, pk):
-        author = get_object_or_404(Author, pk=pk)
-        serializer = AuthorSerializer(author, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        author = get_object_or_404(Author, pk=pk)
-        author.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # GENRE CRUD
